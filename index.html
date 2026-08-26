@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SACHIT PREMIUM</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f0f0f;color:#fff}
+header{height:64px;background:#181818;display:flex;align-items:center;gap:18px;padding:0 22px;position:sticky;top:0;z-index:5}
+.logo{font-weight:900;font-size:21px}.logo b{color:#e50914}.search{flex:1;max-width:650px;display:flex}.search input{width:100%;padding:12px 16px;background:#121212;border:1px solid #444;color:white;border-radius:24px 0 0 24px}.search button{width:58px;border:1px solid #444;background:#292929;color:white;border-radius:0 24px 24px 0}.avatar{width:38px;height:38px;border-radius:50%;background:#e50914;display:grid;place-items:center;font-weight:bold}
+.layout{display:flex}.side{width:220px;padding:18px 12px;position:fixed;top:64px;bottom:0;background:#181818}.side button{display:block;width:100%;padding:13px;text-align:left;background:none;border:0;color:white;border-radius:9px;font-size:15px}.side button:hover{background:#303030}.main{margin-left:220px;padding:24px;width:calc(100% - 220px)}
+.pills{display:flex;gap:10px;overflow:auto;margin-bottom:24px}.pill{background:#272727;border:0;color:#fff;padding:9px 16px;border-radius:20px;white-space:nowrap}.pill.active{background:white;color:black}
+.hero{background:linear-gradient(110deg,#2b1012,#202020);padding:30px;border-radius:16px;margin-bottom:26px}.hero h1{font-size:38px;margin:0 0 10px}.hero p{color:#ccc}.hero button{background:#e50914;color:white;border:0;border-radius:8px;padding:12px 20px;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}.card{cursor:pointer}.thumb{height:145px;border-radius:10px;background:linear-gradient(135deg,#333,#111);display:grid;place-items:center;font-size:38px;position:relative}.duration{position:absolute;right:8px;bottom:7px;background:#000;padding:3px 6px;border-radius:4px;font-size:12px}.title{font-weight:bold;margin-top:10px;line-height:1.35}.meta{color:#aaa;font-size:13px;margin-top:6px}
+.page{display:none}.page.active{display:block}.watch{max-width:900px}.player{aspect-ratio:16/9;background:#050505;border-radius:12px;display:grid;place-items:center;font-size:70px}.actions{display:flex;gap:10px;margin:14px 0}.actions button,.form button{background:#292929;color:white;border:0;padding:10px 16px;border-radius:8px}.form{max-width:600px;background:#181818;padding:24px;border-radius:14px}.form input,.form textarea{width:100%;margin:8px 0 16px;padding:12px;border-radius:7px;border:1px solid #444;background:#101010;color:#fff}.comment{padding:12px 0;border-bottom:1px solid #333}.channel{display:flex;gap:20px;align-items:center;background:#181818;padding:25px;border-radius:14px;margin-bottom:22px}.bigavatar{width:80px;height:80px;border-radius:50%;background:#e50914;display:grid;place-items:center;font-size:28px;font-weight:bold}
+@media(max-width:800px){.side{display:none}.main{margin-left:0;width:100%;padding:15px}.hero h1{font-size:28px}header{padding:0 10px}.search{max-width:none}.grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px}.thumb{height:110px}}
+</style>
+</head>
+<body>
+<header><div class="logo">▶ <b>SACHIT</b> PREMIUM</div><div class="search"><input id="q" placeholder="वीडियो खोजें..."><button onclick="search()">⌕</button></div><div class="avatar">S</div></header>
+<div class="layout">
+<aside class="side">
+<button onclick="show('home')">⌂ होम</button><button onclick="show('trending')">🔥 ट्रेंडिंग</button><button onclick="show('subscriptions')">▣ सब्सक्रिप्शन</button><button onclick="show('upload')">＋ वीडियो अपलोड</button><button onclick="show('channel')">◉ मेरा चैनल</button><button onclick="show('login')">⇥ लॉगिन</button>
+</aside>
+<main class="main">
+<section id="home" class="page active">
+<div class="hero"><h1>SACHIT PREMIUM</h1><p>वीडियो देखें, क्रिएट करें और शेयर करें।</p><button onclick="show('upload')">वीडियो अपलोड करें</button></div>
+<div class="pills"><button class="pill active">सभी</button><button class="pill">Music</button><button class="pill">Gaming</button><button class="pill">News</button><button class="pill">Education</button><button class="pill">Entertainment</button></div>
+<h2>आपके लिए</h2><div id="homegrid" class="grid"></div>
+</section>
+<section id="trending" class="page"><h2>🔥 ट्रेंडिंग</h2><div id="trendgrid" class="grid"></div></section>
+<section id="subscriptions" class="page"><h2>आपके सब्सक्रिप्शन</h2><p style="color:#aaa">जिन channels को आप subscribe करेंगे, उनके videos यहाँ दिखेंगे।</p><div id="subgrid" class="grid"></div></section>
+<section id="watch" class="page"><div class="watch"><div class="player">▶</div><h2 id="watchtitle">वीडियो</h2><p class="meta">SACHIT PREMIUM • अभी</p><div class="actions"><button onclick="alert('Liked!')">👍 Like</button><button onclick="alert('Subscribed!')">🔔 Subscribe</button><button onclick="navigator.clipboard?.writeText(location.href)">↗ Share</button></div><h3>Comments</h3><div class="form"><input id="comment" placeholder="अपना comment लिखें"><button onclick="addComment()">Comment</button></div><div id="comments"></div></div></section>
+<section id="upload" class="page"><h2>वीडियो अपलोड करें</h2><div class="form"><label>Video file</label><input type="file" id="file" accept="video/*"><label>Title</label><input id="utitle" placeholder="वीडियो का title"><label>Description</label><textarea id="udesc" rows="5" placeholder="वीडियो के बारे में"></textarea><button onclick="upload()">Publish Video</button></div></section>
+<section id="channel" class="page"><div class="channel"><div class="bigavatar">S</div><div><h1>SACHIT PREMIUM</h1><p class="meta">Creator Channel</p><button class="actions" onclick="alert('Subscribed!')">🔔 Subscribe</button></div></div><h2>Videos</h2><div id="channelgrid" class="grid"></div></section>
+<section id="login" class="page"><h2>Login / Signup</h2><div class="form"><input placeholder="Email"><input type="password" placeholder="Password"><button onclick="alert('Demo login successful!')">Login</button></div></section>
+</main></div>
+<script>
+const videos=[
+ {t:"SACHIT PREMIUM का स्वागत है",c:"SACHIT PREMIUM",v:"1:24",e:"▶"},
+ {t:"आज का शानदार वीडियो",c:"Premium Creator",v:"8:42",e:"🎬"},
+ {t:"New Music & Entertainment",c:"Music Zone",v:"4:18",e:"♫"},
+ {t:"Gaming Highlights",c:"Gamer Hub",v:"12:05",e:"🎮"},
+ {t:"Learning की नई शुरुआत",c:"Education Pro",v:"6:31",e:"📚"},
+ {t:"Trending Story",c:"Daily Update",v:"5:20",e:"🔥"}
+];
+function cards(list=videos){return list.map((x,i)=>`<div class="card" onclick="watch(${i})"><div class="thumb">${x.e}<span class="duration">${x.v}</span></div><div class="title">${x.t}</div><div class="meta">${x.c} • ${Math.floor(Math.random()*900+100)}K views</div></div>`).join('')}
+function render(){homegrid.innerHTML=cards();trendgrid.innerHTML=cards(videos.slice().reverse());subgrid.innerHTML=cards(videos.slice(0,3));channelgrid.innerHTML=cards(videos.slice(0,4))}
+function show(id){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo(0,0)}
+function watch(i){watchtitle.textContent=videos[i].t;show('watch')}
+function search(){let q=document.getElementById('q').value.toLowerCase();let r=videos.filter(x=>(x.t+x.c).toLowerCase().includes(q));homegrid.innerHTML=cards(r);show('home')}
+function addComment(){let x=comment.value.trim();if(!x)return;comments.innerHTML+=`<div class="comment"><b>आप</b><br>${x}</div>`;comment.value=''}
+function upload(){let t=utitle.value.trim();if(!t){alert('Title डालें');return}videos.unshift({t,c:'SACHIT PREMIUM',v:'New',e:'▶'});render();alert('Demo में video publish हो गया!');show('channel')}
+render();
+</script></body></html>
