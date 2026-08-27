@@ -29,7 +29,12 @@ header{height:64px;background:#181818;display:flex;align-items:center;gap:18px;p
 </section>
 <section id="trending" class="page"><h2>🔥 ट्रेंडिंग</h2><div id="trendgrid" class="grid"></div></section>
 <section id="subscriptions" class="page"><h2>आपके सब्सक्रिप्शन</h2><p style="color:#aaa">जिन channels को आप subscribe करेंगे, उनके videos यहाँ दिखेंगे।</p><div id="subgrid" class="grid"></div></section>
-<section id="watch" class="page"><div class="watch"><div class="player">▶</div><h2 id="watchtitle">वीडियो</h2><p class="meta">SACHIT PREMIUM • अभी</p><div class="actions"><button onclick="alert('Liked!')">👍 Like</button><button onclick="alert('Subscribed!')">🔔 Subscribe</button><button onclick="navigator.clipboard?.writeText(location.href)">↗ Share</button></div><h3>Comments</h3><div class="form"><input id="comment" placeholder="अपना comment लिखें"><button onclick="addComment()">Comment</button></div><div id="comments"></div></div></section>
+<section id="watch" class="page"><div class="watch"><div class="player">
+  <video controls playsinline style="width:100%; height:100%; object-fit:contain;">
+    <source src="https://qmrfcfibzmlmgndnnbut.supabase.co/storage/v1/object/public/Videos/Untitled%20folder/a.mp4" type="video/mp4">
+    आपका ब्राउज़र वीडियो सपोर्ट नहीं करता।
+  </video>
+</div><h2 id="watchtitle">वीडियो</h2><p class="meta">SACHIT PREMIUM • अभी</p><div class="actions"><button onclick="alert('Liked!')">👍 Like</button><button onclick="alert('Subscribed!')">🔔 Subscribe</button><button onclick="navigator.clipboard?.writeText(location.href)">↗ Share</button></div><h3>Comments</h3><div class="form"><input id="comment" placeholder="अपना comment लिखें"><button onclick="addComment()">Comment</button></div><div id="comments"></div></div></section>
 <section id="upload" class="page"><h2>वीडियो अपलोड करें</h2><div class="form"><label>Video file</label><input type="file" id="file" accept="video/*"><label>Title</label><input id="utitle" placeholder="वीडियो का title"><label>Description</label><textarea id="udesc" rows="5" placeholder="वीडियो के बारे में"></textarea><button onclick="upload()">Publish Video</button></div></section>
 <section id="channel" class="page"><div class="channel"><div class="bigavatar">S</div><div><h1>SACHIT PREMIUM</h1><p class="meta">Creator Channel</p><button class="actions" onclick="alert('Subscribed!')">🔔 Subscribe</button></div></div><h2>Videos</h2><div id="channelgrid" class="grid"></div></section>
 <section id="login" class="page"><h2>Login / Signup</h2><div class="form"><input placeholder="Email"><input type="password" placeholder="Password"><button onclick="alert('Demo login successful!')">Login</button></div></section>
