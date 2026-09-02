@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SACHIT PREMIUM</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0f0f0f;color:#fff}
+button{cursor:pointer}
+header{height:64px;background:#181818;display:flex;align-items:center;gap:18px;padding:0 22px;position:sticky;top:0;z-index:5}
+.logo{font-weight:900;font-size:21px;white-space:nowrap}.logo b{color:#e50914}
+.search{flex:1;max-width:650px;display:flex}
+.search input{width:100%;padding:12px 16px;background:#121212;border:1px solid #444;color:white;border-radius:24px 0 0 24px}
+.search button{width:58px;border:1px solid #444;background:#292929;color:white;border-radius:0 24px 24px 0}
+.avatar{width:38px;height:38px;border-radius:50%;background:#e50914;display:grid;place-items:center;font-weight:bold}
+.layout{display:flex}.side{width:220px;padding:18px 12px;position:fixed;top:64px;bottom:0;background:#181818}
+.side button{display:block;width:100%;padding:13px;text-align:left;background:none;border:0;color:white;border-radius:9px;font-size:15px}
+.side button:hover{background:#303030}
+.main{margin-left:220px;padding:24px;width:calc(100% - 220px)}
+.pills{display:flex;gap:10px;overflow:auto;margin-bottom:24px}
+.pill{background:#272727;border:0;color:#fff;padding:9px 16px;border-radius:20px;white-space:nowrap}
+.pill.active{background:white;color:black}
+.hero{background:linear-gradient(110deg,#2b1012,#202020);padding:30px;border-radius:16px;margin-bottom:26px}
+.hero h1{font-size:38px;margin:0 0 10px}.hero p{color:#ccc}
+.hero button,.primary{background:#e50914;color:white;border:0;border-radius:8px;padding:12px 20px;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
+.card{cursor:pointer}.thumb{height:145px;border-radius:10px;background:linear-gradient(135deg,#333,#111);display:grid;place-items:center;font-size:38px;position:relative;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover}.duration{position:absolute;right:8px;bottom:7px;background:#000;padding:3px 6px;border-radius:4px;font-size:12px}
+.title{font-weight:bold;margin-top:10px;line-height:1.35}.meta{color:#aaa;font-size:13px;margin-top:6px}
+.page{display:none}.page.active{display:block}.watch{max-width:900px}
+.player{aspect-ratio:16/9;background:#050505;border-radius:12px;display:grid;place-items:center;overflow:hidden}
+.player video{width:100%;height:100%;object-fit:contain}
+.actions{display:flex;gap:10px;margin:14px 0;flex-wrap:wrap}
+.actions button,.form button,.secondary{background:#292929;color:white;border:0;padding:10px 16px;border-radius:8px}
+.form{max-width:600px;background:#181818;padding:24px;border-radius:14px}
+.form input,.form textarea,.form select{width:100%;margin:8px 0 16px;padding:12px;border-radius:7px;border:1px solid #444;background:#101010;color:#fff}
+.comment{padding:12px 0;border-bottom:1px solid #333}.comment small{color:#888}
+.channel{display:flex;gap:20px;align-items:center;background:#181818;padding:25px;border-radius:14px;margin-bottom:22px}
+.bigavatar{width:80px;height:80px;border-radius:50%;background:#e50914;display:grid;place-items:center;font-size:28px;font-weight:bold}
+.status{margin:12px 0;padding:12px;border-radius:8px;background:#202020;color:#ddd;display:none}
+.status.show{display:block}.hidden{display:none!important}
+.userbar{font-size:12px;color:#aaa;margin-top:5px}
+.empty{color:#aaa;padding:30px 0}
+@media(max-width:800px){
+.side{display:none}.main{margin-left:0;width:100%;padding:15px}
+.hero h1{font-size:28px}header{padding:0 10px}.search{max-width:none}
+.grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px}.thumb{height:110px}
+.logo{font-size:16px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">▶ <b>SACHIT</b> PREMIUM</div>
+  <div class="search">
+    <input id="q" placeholder="वीडियो खोजें..." onkeydown="if(event.key==='Enter')search()">
+    <button onclick="search()">⌕</button>
+  </div>
+  <div class="avatar" id="avatar">S</div>
+</header>
+
+<div class="layout">
+<aside class="side">
+  <button onclick="show('home')">⌂ होम</button>
+  <button onclick="show('trending')">🔥 ट्रेंडिंग</button>
+  <button onclick="show('subscriptions')">▣ सब्सक्रिप्शन</button>
+  <button onclick="show('upload')">＋ वीडियो अपलोड</button>
+  <button onclick="show('channel')">◉ मेरा चैनल</button>
+  <button id="loginNav" onclick="show('login')">⇥ लॉगिन</button>
+  <button id="logoutNav" class="hidden" onclick="logout()">⇥ लॉगआउट</button>
+</aside>
+
+<main class="main">
+
+<section id="home" class="page active">
+  <div class="hero">
+    <h1>SACHIT PREMIUM</h1>
+    <p>वीडियो देखें, क्रिएट करें और शेयर करें।</p><p class="meta">Public Signup/Login के बाद कोई भी creator video upload कर सकता है।</p>
+    <button onclick="requireLogin('upload')">वीडियो अपलोड करें</button>
+  </div>
+  <div class="pills">
+    <button class="pill active" onclick="filterCategory('')">सभी</button>
+    <button class="pill" onclick="filterCategory('Music')">Music</button>
+    <button class="pill" onclick="filterCategory('Gaming')">Gaming</button>
+    <button class="pill" onclick="filterCategory('News')">News</button>
+    <button class="pill" onclick="filterCategory('Education')">Education</button>
+    <button class="pill" onclick="filterCategory('Entertainment')">Entertainment</button>
+  </div>
+  <h2>आपके लिए</h2>
+  <div id="homegrid" class="grid"></div>
+</section>
+
+<section id="trending" class="page">
+  <h2>🔥 ट्रेंडिंग</h2>
+  <div id="trendgrid" class="grid"></div>
+</section>
+
+<section id="subscriptions" class="page">
+  <h2>आपके सब्सक्रिप्शन</h2>
+  <p style="color:#aaa">आप जिन channels को subscribe करेंगे, उनके videos यहाँ दिखेंगे।</p>
+  <div id="subgrid" class="grid"></div>
+</section>
+
+<section id="watch" class="page">
+  <div class="watch">
+    <div class="player">
+      <video id="videoPlayer" controls playsinline>
+        आपका ब्राउज़र वीडियो सपोर्ट नहीं करता।
+      </video>
+    </div>
+    <h2 id="watchtitle">वीडियो</h2>
+    <p id="watchDescription" class="meta"></p>
+    <p id="watchMeta" class="meta"></p>
+
+    <div class="actions">
+      <button id="likeBtn" onclick="toggleLike()">👍 Like</button>
+      <button id="subscribeBtn" onclick="toggleSubscribe()">🔔 Subscribe</button>
+      <button onclick="shareVideo()">↗ Share</button>
+    </div>
+
+    <h3>Comments</h3>
+    <div class="form">
+      <input id="comment" placeholder="अपना comment लिखें">
+      <button onclick="addComment()">Comment</button>
+    </div>
+    <div id="comments"></div>
+  </div>
+</section>
+
+<section id="upload" class="page">
+  <h2>वीडियो अपलोड करें</h2>
+  <p class="meta">Video upload करने के लिए पहले Public Signup/Login करें।</p>
+  <div id="uploadStatus" class="status"></div>
+  <div class="form">
+    <label>Video file</label>
+    <input type="file" id="file" accept="video/*">
+
+    <label>Title</label>
+    <input id="utitle" maxlength="150" placeholder="वीडियो का title">
+
+    <label>Description</label>
+    <textarea id="udesc" rows="5" maxlength="5000" placeholder="वीडियो के बारे में"></textarea>
+
+    <label>Category</label>
+    <select id="ucategory">
+      <option>Entertainment</option>
+      <option>Music</option>
+      <option>Gaming</option>
+      <option>News</option>
+      <option>Education</option>
+    </select>
+
+    <button class="primary" onclick="upload()">Publish Video</button>
+  </div>
+</section>
+
+<section id="channel" class="page">
+  <div class="channel">
+    <div class="bigavatar">S</div>
+    <div>
+      <h1>SACHIT PREMIUM</h1>
+      <p class="meta">Creator Channel</p>
+      <button id="channelSubscribeBtn" class="secondary" onclick="toggleSubscribe()">🔔 Subscribe</button>
+    </div>
+  </div>
+  <h2>Videos</h2>
+  <div id="channelgrid" class="grid"></div>
+</section>
+
+<section id="login" class="page">
+  <h2 id="authHeading">Public Signup / Login</h2>
+  <div id="authStatus" class="status"></div>
+  <div class="form">
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button class="primary" onclick="login()">Login</button>
+    <button class="secondary" onclick="signup()">Create account</button>
+  </div>
+  <p class="meta">नया creator पहले Public Signup करेगा। Login के बाद ही video upload, Like, Subscribe और Comment कर सकेगा।</p>
+</section>
+
+</main>
+</div>
+
+<script>
+/* =========================
+   SUPABASE CONFIG
+   केवल publishable key डालें।
+   Secret key कभी यहाँ न डालें।
+========================= */
+const SUPABASE_URL = "https://qmrfcfibzmlmgndnnbut.supabase.co";
+const SUPABASE_KEY = "sb_publishable_11EBu_96hsUHL8qRYoFaaw_sY4m_Rbl";
+
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let videos = [];
+let currentVideo = null;
+let currentUser = null;
+let currentCategory = "";
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function show(id){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  const page = $(id);
+  if(page) page.classList.add("active");
+  window.scrollTo(0,0);
+}
+
+function requireLogin(page){
+  if(!currentUser){
+    setStatus("authStatus","वीडियो upload करने से पहले Public Signup/Login करना जरूरी है।");
+    show("login");
+    return;
+  }
+  show(page);
+}
+
+function setStatus(id,text,showBox=true){
+  const el=$(id);
+  if(!el)return;
+  el.textContent=text;
+  el.classList.toggle("show",showBox);
+}
+
+function clearStatus(id){
+  const el=$(id);
+  if(el)el.classList.remove("show");
+}
+
+/* =========================
+   AUTH
+========================= */
+
+async function signup(){
+  const email=$("email").value.trim();
+  const password=$("password").value;
+
+  if(!email || password.length < 6){
+    setStatus("authStatus","Valid email और कम से कम 6 character का password डालें।");
+    return;
+  }
+
+  const {error}=await client.auth.signUp({email,password});
+
+  if(error){
+    setStatus("authStatus",error.message);
+    return;
+  }
+
+  setStatus("authStatus","Account बन गया। अगर email verification चालू है तो email verify करें, फिर Login करें।");
+}
+
+async function login(){
+  const email=$("email").value.trim();
+  const password=$("password").value;
+
+  if(!email || !password){
+    setStatus("authStatus","Email और password डालें।");
+    return;
+  }
+
+  const {data,error}=await client.auth.signInWithPassword({email,password});
+
+  if(error){
+    setStatus("authStatus",error.message);
+    return;
+  }
+
+  currentUser=data.user;
+  updateAuthUI();
+  setStatus("authStatus","Login successful!");
+  await loadVideos();
+  show("home");
+}
+
+async function logout(){
+  await client.auth.signOut();
+  currentUser=null;
+  updateAuthUI();
+  show("home");
+}
+
+function updateAuthUI(){
+  $("loginNav").classList.toggle("hidden",!!currentUser);
+  $("logoutNav").classList.toggle("hidden",!currentUser);
+  $("avatar").textContent=currentUser?.email?.charAt(0).toUpperCase() || "S";
+}
+
+/* =========================
+   LOAD VIDEOS
+========================= */
+
+async function loadVideos(){
+  const {data,error}=await client
+    .from("videos")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    console.error(error);
+    setStatus("uploadStatus","Videos load नहीं हुए: "+error.message);
+    return;
+  }
+
+  videos=data || [];
+  render();
+}
+
+/* =========================
+   CARDS
+========================= */
+
+function cards(list=[]){
+  if(!list.length){
+    return `<div class="empty">अभी कोई वीडियो उपलब्ध नहीं है।</div>`;
+  }
+
+  return list.map((x,i)=>{
+    const originalIndex=videos.findIndex(v=>String(v.id)===String(x.id));
+
+    return `
+      <div class="card" onclick="watchVideo(${originalIndex})">
+        <div class="thumb">
+          ${x.thumbnail_url
+            ? `<img src="${escapeHTML(x.thumbnail_url)}" alt="">`
+            : `<span>▶</span>`}
+          <span class="duration">${escapeHTML(x.duration || "")}</span>
+        </div>
+        <div class="title">${escapeHTML(x.title)}</div>
+        <div class="meta">
+          ${escapeHTML(x.channel_name || "SACHIT PREMIUM")}
+          • ${Number(x.views||0)} views
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function filteredVideos(){
+  if(!currentCategory)return videos;
+  return videos.filter(v=>v.category===currentCategory);
+}
+
+function render(){
+  const list=filteredVideos();
+
+  $("homegrid").innerHTML=cards(list);
+
+  $("trendgrid").innerHTML=cards(
+    [...videos].sort((a,b)=>Number(b.views||0)-Number(a.views||0))
+  );
+
+  $("subgrid").innerHTML=cards(videos.slice(0,3));
+
+  $("channelgrid").innerHTML=cards(videos);
+}
+
+function filterCategory(category){
+  currentCategory=category;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("active"));
+  const target=[...document.querySelectorAll(".pill")]
+    .find(p=>p.textContent.trim()===(category || "सभी"));
+  if(target)target.classList.add("active");
+  render();
+}
+
+/* =========================
+   WATCH
+========================= */
+
+async function watchVideo(index){
+  if(index<0 || !videos[index])return;
+
+  currentVideo=videos[index];
+
+  $("watchtitle").textContent=currentVideo.title;
+  $("watchDescription").textContent=currentVideo.description || "";
+  $("watchMeta").textContent=
+    `${currentVideo.channel_name || "SACHIT PREMIUM"} • ${Number(currentVideo.views||0)} views`;
+
+  const player=$("videoPlayer");
+  player.src=currentVideo.video_url;
+  player.load();
+
+  show("watch");
+
+  const newViews=Number(currentVideo.views||0)+1;
+
+  const {error}=await client
+    .from("videos")
+    .update({views:newViews})
+    .eq("id",currentVideo.id);
+
+  if(!error){
+    currentVideo.views=newViews;
+    $("watchMeta").textContent=
+      `${currentVideo.channel_name || "SACHIT PREMIUM"} • ${newViews} views`;
+  }
+
+  await updateLikeButton();
+  await updateSubscribeButton();
+  await loadComments();
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+function search(){
+  const q=$("q").value.toLowerCase().trim();
+
+  const result=videos.filter(x=>
+    `${x.title||""} ${x.description||""} ${x.channel_name||""} ${x.category||""}`
+      .toLowerCase()
+      .includes(q)
+  );
+
+  $("homegrid").innerHTML=cards(result);
+  show("home");
+}
+
+/* =========================
+   UPLOAD
+========================= */
+
+async function upload(){
+  if(!currentUser){
+    show("login");
+    setStatus("authStatus","पहले Public Signup/Login करें, फिर video upload करें।");
+    return;
+  }
+
+  const file=$("file").files[0];
+  const title=$("utitle").value.trim();
+  const description=$("udesc").value.trim();
+  const category=$("ucategory").value;
+
+  if(!file){
+    setStatus("uploadStatus","पहले video file चुनें।");
+    return;
+  }
+
+  if(!file.type.startsWith("video/")){
+    setStatus("uploadStatus","सिर्फ video file upload करें।");
+    return;
+  }
+
+  if(!title){
+    setStatus("uploadStatus","Title डालें।");
+    return;
+  }
+
+  setStatus("uploadStatus","Video upload हो रहा है... कृपया page बंद न करें।");
+
+  try{
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const filePath=`${currentUser.id}/${Date.now()}-${safeName}`;
+
+    const {error:uploadError}=await client.storage
+      .from("Videos")
+      .upload(filePath,file,{
+        contentType:file.type,
+        upsert:false
+      });
+
+    if(uploadError)throw uploadError;
+
+    const {data:urlData}=client.storage
+      .from("Videos")
+      .getPublicUrl(filePath);
+
+    const videoURL=urlData.publicUrl;
+
+    const {error:dbError}=await client
+      .from("videos")
+      .insert({
+        title,
+        description,
+        video_url:videoURL,
+        category,
+        channel_name:"SACHIT PREMIUM",
+        views:0,
+        uploader_id:currentUser.id
+      });
+
+    if(dbError){
+      await client.storage.from("Videos").remove([filePath]);
+      throw dbError;
+    }
+
+    $("file").value="";
+    $("utitle").value="";
+    $("udesc").value="";
+    $("ucategory").value="Entertainment";
+
+    setStatus("uploadStatus","🎉 Video successfully publish हो गया!");
+    await loadVideos();
+    show("channel");
+
+  }catch(error){
+    console.error(error);
+    setStatus("uploadStatus","Upload error: "+error.message);
+  }
+}
+
+/* =========================
+   LIKES
+========================= */
+
+async function toggleLike(){
+  if(!currentUser){
+    show("login");
+    setStatus("authStatus","Like करने के लिए Login करें।");
+    return;
+  }
+
+  if(!currentVideo)return;
+
+  const {data:existing}=await client
+    .from("video_likes")
+    .select("id")
+    .eq("video_id",currentVideo.id)
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  if(existing){
+    await client.from("video_likes").delete().eq("id",existing.id);
+  }else{
+    const {error}=await client.from("video_likes").insert({
+      video_id:currentVideo.id,
+      user_id:currentUser.id
+    });
+    if(error && error.code!=="23505"){
+      alert(error.message);
+      return;
+    }
+  }
+
+  await updateLikeButton();
+}
+
+async function updateLikeButton(){
+  if(!currentVideo){
+    $("likeBtn").textContent="👍 Like";
+    return;
+  }
+
+  const {count}=await client
+    .from("video_likes")
+    .select("*",{count:"exact",head:true})
+    .eq("video_id",currentVideo.id);
+
+  let liked=false;
+
+  if(currentUser){
+    const {data}=await client
+      .from("video_likes")
+      .select("id")
+      .eq("video_id",currentVideo.id)
+      .eq("user_id",currentUser.id)
+      .maybeSingle();
+
+    liked=!!data;
+  }
+
+  $("likeBtn").textContent=
+    `${liked?"❤️":"👍"} Like ${count||0}`;
+}
+
+/* =========================
+   SUBSCRIBE
+========================= */
+
+async function toggleSubscribe(){
+  if(!currentUser){
+    show("login");
+    setStatus("authStatus","Subscribe करने के लिए Login करें।");
+    return;
+  }
+
+  const channel="SACHIT PREMIUM";
+
+  const {data:existing}=await client
+    .from("subscriptions")
+    .select("id")
+    .eq("subscriber_id",currentUser.id)
+    .eq("channel_name",channel)
+    .maybeSingle();
+
+  if(existing){
+    await client.from("subscriptions").delete().eq("id",existing.id);
+  }else{
+    const {error}=await client.from("subscriptions").insert({
+      subscriber_id:currentUser.id,
+      channel_name:channel
+    });
+
+    if(error && error.code!=="23505"){
+      alert(error.message);
+      return;
+    }
+  }
+
+  await updateSubscribeButton();
+}
+
+async function updateSubscribeButton(){
+  if(!currentUser){
+    $("subscribeBtn").textContent="🔔 Subscribe";
+    $("channelSubscribeBtn").textContent="🔔 Subscribe";
+    return;
+  }
+
+  const {data}=await client
+    .from("subscriptions")
+    .select("id")
+    .eq("subscriber_id",currentUser.id)
+    .eq("channel_name","SACHIT PREMIUM")
+    .maybeSingle();
+
+  const text=data ? "✓ Subscribed" : "🔔 Subscribe";
+  $("subscribeBtn").textContent=text;
+  $("channelSubscribeBtn").textContent=text;
+}
+
+/* =========================
+   COMMENTS
+========================= */
+
+async function loadComments(){
+  if(!currentVideo)return;
+
+  const {data,error}=await client
+    .from("comments")
+    .select("*")
+    .eq("video_id",currentVideo.id)
+    .order("created_at",{ascending:true});
+
+  if(error){
+    $("comments").innerHTML=
+      `<div class="empty">Comments load नहीं हुए।</div>`;
+    return;
+  }
+
+  $("comments").innerHTML=(data||[]).map(c=>`
+    <div class="comment">
+      <b>${escapeHTML(c.user_email || "User")}</b><br>
+      ${escapeHTML(c.comment_text)}
+      <br><small>${new Date(c.created_at).toLocaleString("hi-IN")}</small>
+    </div>
+  `).join("") || `<div class="empty">अभी कोई comment नहीं है।</div>`;
+}
+
+async function addComment(){
+  if(!currentUser){
+    show("login");
+    setStatus("authStatus","Comment करने के लिए Login करें।");
+    return;
+  }
+
+  if(!currentVideo)return;
+
+  const text=$("comment").value.trim();
+  if(!text)return;
+
+  const {error}=await client.from("comments").insert({
+    video_id:currentVideo.id,
+    user_id:currentUser.id,
+    user_email:currentUser.email,
+    comment_text:text
+  });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  $("comment").value="";
+  await loadComments();
+}
+
+/* =========================
+   SHARE
+========================= */
+
+async function shareVideo(){
+  const url=location.href;
+
+  if(navigator.share){
+    await navigator.share({
+      title:currentVideo?.title || "SACHIT PREMIUM",
+      url
+    });
+  }else{
+    await navigator.clipboard?.writeText(url);
+    alert("Link copied!");
+  }
+}
+
+/* =========================
+   INIT
+========================= */
+
+async function init(){
+  if(SUPABASE_KEY==="PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE"){
+    console.warn("Supabase publishable key अभी नहीं डाली गई है।");
+  }
+
+  const {data}=await client.auth.getSession();
+  currentUser=data.session?.user || null;
+
+  updateAuthUI();
+  await loadVideos();
+
+  client.auth.onAuthStateChange((_event,session)=>{
+    currentUser=session?.user || null;
+    updateAuthUI();
+  });
+}
+
+init();
+</script>
+</body>
+</html>
