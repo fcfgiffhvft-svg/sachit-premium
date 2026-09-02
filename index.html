@@ -59,7 +59,7 @@ header{height:64px;background:#181818;display:flex;align-items:center;gap:18px;p
     <input id="q" placeholder="वीडियो खोजें..." onkeydown="if(event.key==='Enter')search()">
     <button onclick="search()">⌕</button>
   </div>
-  <div class="avatar" id="avatar">S</div>
+  <button class="avatar" id="avatar" onclick="show('login')" aria-label="Login / Signup">S</button>
 </header>
 
 <div class="layout">
@@ -178,6 +178,7 @@ header{height:64px;background:#181818;display:flex;align-items:center;gap:18px;p
     <input id="password" type="password" placeholder="Password">
     <button class="primary" onclick="login()">Login</button>
     <button class="secondary" onclick="signup()">Create account</button>
+    <button class="secondary" onclick="googleLogin()">Continue with Google</button>
   </div>
   <p class="meta">नया creator पहले Public Signup करेगा। Login के बाद ही video upload, Like, Subscribe और Comment कर सकेगा।</p>
 </section>
@@ -192,7 +193,7 @@ header{height:64px;background:#181818;display:flex;align-items:center;gap:18px;p
    Secret key कभी यहाँ न डालें।
 ========================= */
 const SUPABASE_URL = "https://qmrfcfibzmlmgndnnbut.supabase.co";
-const SUPABASE_KEY = "sb_publishable_11EBu_96hsUHL8qRYoFaaw_sY4m_Rbl";
+const SUPABASE_KEY = "PASTE_YOUR_SB_PUBLISHABLE_KEY_HERE";
 
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -266,6 +267,7 @@ async function signup(){
 async function login(){
   const email=$("email").value.trim();
   const password=$("password").value;
+  
 
   if(!email || !password){
     setStatus("authStatus","Email और password डालें।");
@@ -284,6 +286,18 @@ async function login(){
   setStatus("authStatus","Login successful!");
   await loadVideos();
   show("home");
+}
+async function googleLogin(){
+  const {error} = await client.auth.signInWithOAuth({
+    provider:"google",
+    options:{
+      redirectTo:window.location.origin
+    }
+  });
+
+  if(error){
+    setStatus("authStatus",error.message);
+  }
 }
 
 async function logout(){
